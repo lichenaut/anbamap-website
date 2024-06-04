@@ -7,7 +7,13 @@
   import * as L from "leaflet";
   import * as GeoJSON from "geojson";
   document.addEventListener("DOMContentLoaded", function () {
-    var map = L.map("map", { minZoom: 2, maxZoom: 5 }).setView([0, 0], 3);
+    var map = L.map("map", {
+      minZoom: 2,
+      maxZoom: 5,
+      zoomControl: false,
+      worldCopyJump: true,
+      attributionControl: false,
+    }).setView([0, 0], 3);
     L.tileLayer(
       "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
     ).addTo(map);
@@ -29,13 +35,26 @@
               }
 
               let code = properties["ISO_A2"].toLowerCase();
-              window.open("http://localhost:4321/" + code, "_blank");
+              if (code === "-99" || code.length > 2) {
+                code = properties["ISO_A2_EH"].toLowerCase();
+                if (code === "-99") {
+                  switch (properties["ADMIN"]) {
+                    case "Northern Cyprus":
+                      code = "cy";
+                      break;
+                    case "Somaliland":
+                      code = "so";
+                      break;
+                  }
+                }
+              }
+              window.location.href += code;
             });
           },
         }).addTo(map);
       })
       .catch((error: Error) => {
-        console.error("Error:", error);
+        throw error;
       });
   });
 </script>

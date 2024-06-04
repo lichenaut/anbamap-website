@@ -1,8 +1,8 @@
 ---
 import { Image } from "astro:assets";
 import sqlite3 from "sqlite3";
-import * as dbService from "../service/db_service";
-import { MediaEntry } from "../service/db_service";
+import * as dbService from "../services/db_service";
+import { MediaEntry } from "../services/db_service";
 
 function getNameFromIso(isoCode: string) {
   const countryNames: { [key: string]: string } = {
@@ -266,19 +266,25 @@ if (region === undefined) {
   throw new Error("Region is required");
 }
 
-let db: sqlite3.Database = dbService.getDatabase();
-let urls_regions: Map<string, string[]> = await dbService.getUrlsRegions(
-  db,
-  region
-);
-let media_entries: MediaEntry[] = await dbService.getMediaEntries(
-  db,
-  urls_regions
-);
-dbService.closeDatabase(db);
+let db: sqlite3.Database | null = null;
+let media_entries: MediaEntry[] | null = null;
+try {
+  db = dbService.getDatabase();
+  let urls_regions: Map<string, string[]> = await dbService.getUrlsRegions(
+    db,
+    region
+  );
+  media_entries = await dbService.getMediaEntries(db, urls_regions);
+} catch (error) {
+  throw new Error(error);
+} finally {
+  if (db) {
+    dbService.closeDatabase(db);
+  }
+}
 media_entries.sort((a, b) => b.timestamp - a.timestamp);
-export const prerender = true;
 
+export const prerender = true;
 export function getStaticPaths() {
   return [
     { params: { region: "ad" } },
@@ -567,3 +573,10 @@ export function getStaticPaths() {
     ))
   }
 </ol>
+<div style="position: fixed; top: 1rem; left: 1rem;">
+  <a href={new URL(Astro.request.url).origin}>
+    <button class="inline-block border border-gray-600 rounded-lg">
+      <p class="text-gray-800">M</p>
+    </button>
+  </a>
+</div>
