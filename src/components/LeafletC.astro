@@ -1,0 +1,41 @@
+<div id="map" class="h-screen w-screen relative overflow-hidden"></div>
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  is:inline></script>
+<script>
+  import * as L from "leaflet";
+  import * as GeoJSON from "geojson";
+  document.addEventListener("DOMContentLoaded", function () {
+    var map = L.map("map", { minZoom: 2, maxZoom: 5 }).setView([0, 0], 3);
+    L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+    ).addTo(map);
+    fetch("regions.geojson")
+      .then((response: Response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to load GeoJSON file");
+        }
+      })
+      .then((data: GeoJSON.GeoJsonObject) => {
+        L.geoJSON(data, {
+          onEachFeature: (feature: GeoJSON.Feature, layer: L.Layer) => {
+            layer.on("click", () => {
+              let properties = feature.properties;
+              if (!properties) {
+                return;
+              }
+
+              let code = properties["ISO_A2"].toLowerCase();
+              window.open("http://localhost:4321/" + code, "_blank");
+            });
+          },
+        }).addTo(map);
+      })
+      .catch((error: Error) => {
+        console.error("Error:", error);
+      });
+  });
+</script>
