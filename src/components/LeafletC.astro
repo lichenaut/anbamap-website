@@ -9,7 +9,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     var map = L.map("map", {
       minZoom: 2,
-      maxZoom: 5,
+      maxZoom: 6,
       zoomControl: false,
       worldCopyJump: true,
       attributionControl: false,
@@ -48,7 +48,7 @@
                   }
                 }
               }
-              window.location.href += code;
+              window.location.href += code + "-0";
             });
           },
         }).addTo(map);

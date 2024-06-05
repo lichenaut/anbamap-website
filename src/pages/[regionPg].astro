@@ -1,0 +1,94 @@
+---
+import { DateTime } from "luxon";
+import sqlite3 from "sqlite3";
+import * as dbService from "../services/db_service";
+import { MediaEntry } from "../services/db_service";
+import * as longService from "../services/long_service";
+import { Image } from "astro:assets";
+
+export async function getStaticPaths() {
+  return longService.getRegionPgPaths();
+}
+
+let { regionPg } = Astro.params;
+if (regionPg === undefined) {
+  throw new Error("Region is required");
+}
+
+let regionPgParts: string[] = regionPg.split("-");
+let region: string = regionPgParts[0];
+let page: number = parseInt(regionPgParts[1]);
+
+let now: number = Math.floor(
+  DateTime.now().setZone("America/Los_Angeles").toSeconds()
+);
+let todayStart: number = now - (now % 86400);
+let rangeMin = todayStart - (page + 1) * 86400;
+let rangeMax = todayStart - page * 86400;
+
+let db: sqlite3.Database | null = null;
+let mediaEntries: MediaEntry[] | null = null;
+try {
+  db = dbService.getDatabase();
+  let urlsRegions: Map<string, string[]> = await dbService.getUrlsRegions(
+    db,
+    region
+  );
+  mediaEntries = await dbService.getMediaEntries(
+    db,
+    urlsRegions,
+    rangeMin,
+    rangeMax
+  );
+} catch (error) {
+  throw new Error(error);
+} finally {
+  if (db) {
+    dbService.closeDatabase(db);
+  }
+}
+mediaEntries.sort((a, b) => b.timestamp - a.timestamp);
+---
+
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="/global.css" />
+<div style="position: fixed; top: 1rem; left: 1rem;">
+  <a href={new URL(Astro.request.url).origin}>
+    <button class="inline-block border border-gray-600 rounded-lg">
+      <p class="text-gray-800">M</p>
+    </button>
+  </a>
+</div>
+<ol>
+  {
+    mediaEntries.map(async (item) => (
+      <div class="p-2 m-2 border border-gray-600 w-3/5 mx-auto rounded-lg">
+        <li>
+          <a href={item.url} target="_blank" class="flex">
+            <Image
+              src={item.image_url}
+              alt="media icon"
+              width={1}
+              height={1}
+              class="size-1/6 max-w-fit max-h-fit rounded-lg"
+            />
+            <div class="ml-2">
+              <p class="text-gray-800 font-bold"> {item.title}</p>
+              <p class="text-gray-600">{item.date}</p>
+              <p class="text-gray-800">{item.body}</p>
+            </div>
+          </a>
+          {item.regions.map((region) => (
+            <a href={new URL(Astro.request.url).origin + "/" + region}>
+              <button class="inline-block p-1 mt-2 mr-2 border border-gray-600 rounded-lg">
+                <p class="text-gray-800">
+                  {longService.getNameFromIso(region)}
+                </p>
+              </button>
+            </a>
+          ))}
+        </li>
+      </div>
+    ))
+  }
+</ol>

@@ -1,5 +1,6 @@
 import sqlite3 from "sqlite3";
 import { fetchImageUrl } from "./img_service";
+import { DateTime } from "luxon";
 
 interface UrlRegionRow {
   url: string;
@@ -97,14 +98,17 @@ export function getUrlsRegions(
 
 export function getMediaEntries(
   db: sqlite3.Database,
-  urls_regions: Map<string, string[]>
+  urls_regions: Map<string, string[]>,
+  rangeMin: number,
+  rangeMax: number
 ): Promise<MediaEntry[]> {
   return new Promise((resolve, reject) => {
     let media_entries: MediaEntry[] = [];
     let promises: Promise<void>[] = [];
     db.serialize(() => {
       db.each(
-        "SELECT * FROM urls",
+        "SELECT * FROM urls WHERE timestamp BETWEEN ? AND ?",
+        [rangeMin, rangeMax],
         (err: Error, row: UrlRow) => {
           if (err) {
             console.error(err.message);
@@ -125,7 +129,9 @@ export function getMediaEntries(
               url: row.url,
               image_url: image_url,
               timestamp: row.timestamp,
-              date: new Date(row.timestamp * 1000).toLocaleDateString(),
+              date: DateTime.fromSeconds(row.timestamp)
+                .setZone("America/Los_Angeles")
+                .toLocaleString(DateTime.DATETIME_FULL),
               title: row.title,
               body: row.body,
               regions: regions,
@@ -134,7 +140,7 @@ export function getMediaEntries(
 
           promises.push(promise);
         },
-        (err) => {
+        (err: Error) => {
           if (err) {
             reject(err);
           } else {

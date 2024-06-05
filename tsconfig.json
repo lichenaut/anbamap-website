@@ -1,4 +1,4 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/services/time_service.js"]
 }
