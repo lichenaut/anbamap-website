@@ -4,6 +4,7 @@ import sqlite3 from "sqlite3";
 import * as dbService from "../services/db_service";
 import { MediaEntry } from "../services/db_service";
 import * as longService from "../services/long_service";
+import worldImage from "../assets/world.png";
 import PageManagerC from "../components/PageManagerC.astro";
 import { Image } from "astro:assets";
 
@@ -66,8 +67,8 @@ let next: string = origin + "/" + region + "-" + (page + 1);
 <link rel="stylesheet" href="/global.css" />
 <div style="position: fixed; top: 1rem; left: 1rem;">
   <a href={origin}>
-    <button class="inline-block border border-gray-600 rounded-lg">
-      <p class="text-gray-800">M</p>
+    <button class="inline-block">
+      <Image src={worldImage} alt="world icon" width={48} height={48} />
     </button>
   </a>
 </div>
@@ -130,3 +131,10 @@ let next: string = origin + "/" + region + "-" + (page + 1);
   origin={origin}
   region={region}
 />
+<div class="p-2 mx-auto">
+  <a
+    href="https://www.flaticon.com/free-icons/world"
+    title="world icons"
+    class="text-gray-800">World icons created by prettycons - Flaticon</a
+  >
+</div>
