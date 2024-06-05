@@ -107,7 +107,7 @@ export function getMediaEntries(
     let promises: Promise<void>[] = [];
     db.serialize(() => {
       db.each(
-        "SELECT * FROM urls WHERE timestamp BETWEEN ? AND ?",
+        "SELECT * FROM urls WHERE timestamp >= ? AND timestamp < ?",
         [rangeMin, rangeMax],
         (err: Error, row: UrlRow) => {
           if (err) {
@@ -130,7 +130,7 @@ export function getMediaEntries(
               image_url: image_url,
               timestamp: row.timestamp,
               date: DateTime.fromSeconds(row.timestamp)
-                .setZone("America/Los_Angeles")
+                .setZone("America/New_York")
                 .toLocaleString(DateTime.DATETIME_FULL),
               title: row.title,
               body: row.body,
