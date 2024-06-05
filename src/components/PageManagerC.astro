@@ -9,7 +9,7 @@ const { page, previous, next, origin, region } = Astro.props;
       class={`${page === 1 ? "invisible pointer-events-none" : ""}`}
     >
       <button class="inline-block p-1 rounded-lg">
-        <p class="text-gray-800 hover:underline">Prev</p>
+        <p class="text-gray-800 hover:underline">Next Day</p>
       </button>
     </a>
   </div>
@@ -56,7 +56,7 @@ const { page, previous, next, origin, region } = Astro.props;
       class={`${page === 7 ? "invisible pointer-events-none" : ""}`}
     >
       <button class="inline-block p-1 rounded-lg">
-        <p class="text-gray-800 hover:underline">Next</p>
+        <p class="text-gray-800 hover:underline">Prev Day</p>
       </button>
     </a>
   </div>

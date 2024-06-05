@@ -112,7 +112,7 @@ let next: string = origin + "/" + region + "-" + (page + 1);
           </div>
           {item.regions.map((region) => (
             <a href={origin + "/" + region + "-" + pageString}>
-              <button class="inline-block p-1 mr-1 border border-gray-600 rounded-lg">
+              <button class="inline-block p-1 mb-1 border border-gray-600 rounded-lg">
                 <p class="text-gray-800">
                   {longService.getNameFromIso(region)}
                 </p>
