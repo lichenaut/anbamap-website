@@ -154,45 +154,25 @@ export function getMediaEntries(
   });
 }
 
-//"SELECT * FROM url_regions WHERE region_code=?", and then "SELECT COUNT(*) AS count FROM urls WHERE timestamp >= ? AND timestamp < ?",
-
 export function getRegionMediaCount(
   db: sqlite3.Database,
   region: string,
   rangeMin: number,
   rangeMax: number
 ): Promise<number> {
-  let url_region_map: Map<string, string[]> = new Map();
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     db.serialize(() => {
-      db.each(
-        "SELECT * FROM url_regions WHERE region_code=?",
-        [region],
-        (err: Error, row: UrlRegionRow) => {
-          if (err) {
-            throw err;
-          }
-
-          if (url_region_map.get(row.url) === undefined) {
-            url_region_map.set(row.url, []);
-          }
-          url_region_map.get(row.url)?.push(row.region_code);
-        },
-        (err: Error) => {
+      db.get(
+        `SELECT COUNT(*) AS count 
+         FROM urls 
+         JOIN url_regions ON urls.url = url_regions.url 
+         WHERE url_regions.region_code = ? AND urls.timestamp >= ? AND urls.timestamp < ?`,
+        [region, rangeMin, rangeMax],
+        (err: Error, row: { count: number }) => {
           if (err) {
             throw err;
           } else {
-            db.get(
-              "SELECT COUNT(*) AS count FROM urls WHERE timestamp >= ? AND timestamp < ?",
-              [rangeMin, rangeMax],
-              (err: Error, row: { count: number }) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve(row.count);
-                }
-              }
-            );
+            resolve(row.count);
           }
         }
       );
