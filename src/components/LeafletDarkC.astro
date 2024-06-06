@@ -1,4 +1,5 @@
-<div id="map" class="h-screen w-screen relative overflow-hidden"></div>
+<div id="map" class="bg-custom-gray h-screen w-screen relative overflow-hidden">
+</div>
 <script src="../leaflet/leaflet_script.js"></script>
 <script>
   import * as L from "leaflet";
@@ -11,7 +12,7 @@
       attributionControl: false,
     }).setView([0, 0], 3);
     L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+      "https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png"
     ).addTo(map);
     fetch("regions.geojson")
       .then((response: Response) => {
@@ -53,7 +54,7 @@
             }
 
             layer.on("click", () => {
-              window.location.href += code + "-1";
+              window.location.href += "-" + code + "-1";
             });
           },
         }).addTo(map);

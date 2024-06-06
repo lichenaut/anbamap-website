@@ -66,7 +66,13 @@ let next: string = origin + "/" + region + "-" + (page + 1);
 <div style="position: fixed; top: 1rem; left: 1rem;">
   <a href={origin}>
     <button class="inline-block">
-      <Image src={worldImage} alt="world icon" width={48} height={48} />
+      <Image
+        src={worldImage}
+        alt="world icon"
+        width={48}
+        height={48}
+        loading="eager"
+      />
     </button>
   </a>
 </div>

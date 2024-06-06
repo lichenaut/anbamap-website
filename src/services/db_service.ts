@@ -47,8 +47,8 @@ export function getUrlsRegions(
   db: sqlite3.Database,
   region: string
 ): Promise<Map<string, string[]>> {
+  let url_region_map: Map<string, string[]> = new Map();
   return new Promise((resolve) => {
-    let url_region_map: Map<string, string[]> = new Map();
     db.serialize(() => {
       db.each(
         "SELECT * FROM url_regions WHERE region_code=?",
@@ -147,6 +147,52 @@ export function getMediaEntries(
             Promise.all(promises)
               .then(() => resolve(media_entries))
               .catch(reject);
+          }
+        }
+      );
+    });
+  });
+}
+
+//"SELECT * FROM url_regions WHERE region_code=?", and then "SELECT COUNT(*) AS count FROM urls WHERE timestamp >= ? AND timestamp < ?",
+
+export function getRegionMediaCount(
+  db: sqlite3.Database,
+  region: string,
+  rangeMin: number,
+  rangeMax: number
+): Promise<number> {
+  let url_region_map: Map<string, string[]> = new Map();
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      db.each(
+        "SELECT * FROM url_regions WHERE region_code=?",
+        [region],
+        (err: Error, row: UrlRegionRow) => {
+          if (err) {
+            throw err;
+          }
+
+          if (url_region_map.get(row.url) === undefined) {
+            url_region_map.set(row.url, []);
+          }
+          url_region_map.get(row.url)?.push(row.region_code);
+        },
+        (err: Error) => {
+          if (err) {
+            throw err;
+          } else {
+            db.get(
+              "SELECT COUNT(*) AS count FROM urls WHERE timestamp >= ? AND timestamp < ?",
+              [rangeMin, rangeMax],
+              (err: Error, row: { count: number }) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(row.count);
+                }
+              }
+            );
           }
         }
       );

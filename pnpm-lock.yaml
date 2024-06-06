@@ -42,9 +42,6 @@ importers:
       '@types/leaflet':
         specifier: ^1.9.12
         version: 1.9.12
-      '@types/leaflet.heat':
-        specifier: ^0.2.4
-        version: 0.2.4
       '@types/luxon':
         specifier: ^3.4.2
         version: 3.4.2
@@ -791,9 +788,6 @@ packages:
 
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
-
-  '@types/leaflet.heat@0.2.4':
-    resolution: {integrity: sha512-Ocdgf2LUBsPAdQ29KY7QAwe5J5NDq/T2msTsA3OL7eYG3EVjMvkrPqXYJtLbXIauxP9e7bOReDie3GzC7lBLqg==}
 
   '@types/leaflet@1.9.12':
     resolution: {integrity: sha512-BK7XS+NyRI291HIo0HCfE18Lp8oA30H1gpi1tf0mF3TgiCEzanQjOqNZ4x126SXzzi2oNSZhZ5axJp1k0iM6jg==}
@@ -3335,10 +3329,6 @@ snapshots:
   '@types/hast@3.0.4':
     dependencies:
       '@types/unist': 3.0.2
-
-  '@types/leaflet.heat@0.2.4':
-    dependencies:
-      '@types/leaflet': 1.9.12
 
   '@types/leaflet@1.9.12':
     dependencies:
