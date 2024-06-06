@@ -54,7 +54,8 @@
             }
 
             layer.on("click", () => {
-              window.location.href += "-" + code + "-1";
+              let newUrl = window.location.href.replace("dark", code + "-1");
+              window.location.href = newUrl;
             });
           },
         }).addTo(map);
