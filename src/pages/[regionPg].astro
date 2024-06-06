@@ -21,9 +21,7 @@ let regionPgParts: string[] = regionPg.split("-");
 let region: string = regionPgParts[0];
 let pageString: string = regionPgParts[1];
 let page: number = parseInt(pageString);
-let now: number = Math.floor(
-  DateTime.now().setZone("America/New_York").toSeconds()
-);
+let now: number = DateTime.utc().toSeconds();
 let todayStart: number = now - (now % 86400);
 let rangeMin = todayStart - (page - 1) * 86400;
 let rangeMax = todayStart - (page - 2) * 86400;
@@ -97,7 +95,7 @@ let next: string = origin + "/" + region + "-" + (page + 1);
               alt="media icon"
               width={1}
               height={1}
-              class="size-1/2 max-w-fit max-h-fit rounded-lg"
+              class="size-1/6 max-w-fit max-h-fit rounded-lg"
             />
             <div class="ml-2">
               <p class="text-gray-800 font-bold"> {item.title}</p>
@@ -112,7 +110,7 @@ let next: string = origin + "/" + region + "-" + (page + 1);
           </div>
           {item.regions.map((region) => (
             <a href={origin + "/" + region + "-" + pageString}>
-              <button class="inline-block p-1 mb-1 border border-gray-600 rounded-lg">
+              <button class="inline-block p-1 mr-1 mb-2 border border-gray-600 rounded-lg">
                 <p class="text-gray-800">
                   {longService.getNameFromIso(region)}
                 </p>
@@ -134,7 +132,8 @@ let next: string = origin + "/" + region + "-" + (page + 1);
 <div class="p-2 mx-auto">
   <a
     href="https://www.flaticon.com/free-icons/world"
+    target="_blank"
     title="world icons"
-    class="text-gray-800">World icons created by prettycons - Flaticon</a
+    class="text-gray-800">World icon created by prettycons - Flaticon</a
   >
 </div>

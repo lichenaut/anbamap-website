@@ -130,7 +130,7 @@ export function getMediaEntries(
               image_url: image_url,
               timestamp: row.timestamp,
               date: DateTime.fromSeconds(row.timestamp)
-                .setZone("America/New_York")
+                .toUTC()
                 .toLocaleString(DateTime.DATETIME_FULL),
               title: row.title,
               body: row.body,
