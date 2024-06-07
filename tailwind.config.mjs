@@ -6,6 +6,8 @@ export default {
       colors: {
         "custom-gray": "#262626",
         "custom-blue": "#d5e8eb",
+        "leaflet-gray": "#cccccc",
+        "leaflet-dark-gray": "#1e1e1e",
       },
     },
   },

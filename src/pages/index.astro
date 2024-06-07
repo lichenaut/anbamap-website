@@ -1,5 +1,6 @@
 ---
 import FaviconC from "../components/FaviconC.astro";
+import FavoritesC from "../components/map/FavoritesC.astro";
 import OpacityC from "../components/leaflet/OpacityC.astro";
 ---
 
@@ -14,6 +15,7 @@ import OpacityC from "../components/leaflet/OpacityC.astro";
     <link rel="stylesheet" href="leaflet.css" />
   </head>
   <body class="bg-custom-blue">
+    <FavoritesC isDark={false} />
     <OpacityC isDark={false} />
   </body>
 </html>
