@@ -1,6 +1,7 @@
 ---
 import { DateTime } from "luxon";
 import * as dbService from "../services/db_service";
+import FaviconC from "../components/FaviconC.astro";
 import { Image } from "astro:assets";
 import * as longService from "../services/long_service";
 import { MediaEntry } from "../services/db_service";
@@ -56,9 +57,10 @@ export async function getStaticPaths() {
 ---
 
 <meta charset="UTF-8" />
+<FaviconC />
 <title>
   {
-    longService.getNameFromIso(region) +
+    region.toUpperCase() +
       " " +
       DateTime.fromSeconds(rangeMax).toFormat("LLLL d, yyyy")
   }
@@ -157,7 +159,7 @@ export async function getStaticPaths() {
     href="https://www.flaticon.com/free-icons/world"
     target="_blank"
     title="world icons"
-    class="text-gray-800">World icon created by prettycons - Flaticon</a
+    class="text-gray-800">World icons created by prettycons - Flaticon</a
   >
   <p>Organized by UTC day, shown in local time</p>
 </div>
