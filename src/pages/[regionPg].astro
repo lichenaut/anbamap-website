@@ -1,17 +1,13 @@
 ---
 import { DateTime } from "luxon";
-import sqlite3 from "sqlite3";
 import * as dbService from "../services/db_service";
-import { MediaEntry } from "../services/db_service";
+import { Image } from "astro:assets";
 import * as longService from "../services/long_service";
+import { MediaEntry } from "../services/db_service";
+import PageManagerC from "../components/media/PageManagerC.astro";
+import sqlite3 from "sqlite3";
 import worldImage from "../assets/world.png";
 import worldImageInverted from "../assets/world_invert.png";
-import PageManagerC from "../components/PageManagerC.astro";
-import { Image } from "astro:assets";
-
-export async function getStaticPaths() {
-  return longService.getRegionPgPaths();
-}
 
 let { regionPg } = Astro.params;
 if (regionPg === undefined) {
@@ -26,8 +22,8 @@ let now: number = DateTime.utc().toSeconds();
 let todayStart: number = now - (now % 86400);
 let rangeMin = todayStart - (page - 1) * 86400;
 let rangeMax = todayStart - (page - 2) * 86400;
-let db: sqlite3.Database | null = null;
 let mediaEntries: MediaEntry[] | null = null;
+let db: sqlite3.Database | null = null;
 try {
   db = dbService.getDatabase();
   let urlsRegions: Map<string, string[]> = await dbService.getUrlsRegions(
@@ -47,12 +43,16 @@ try {
     dbService.closeDatabase(db);
   }
 }
-mediaEntries.sort((a, b) => b.timestamp - a.timestamp);
 
 let url = new URL(Astro.request.url);
 let origin = url.origin;
 let previous: string = origin + "/" + region + "-" + (page - 1);
 let next: string = origin + "/" + region + "-" + (page + 1);
+mediaEntries.sort((a, b) => b.timestamp - a.timestamp);
+
+export async function getStaticPaths() {
+  return longService.getRegionPgPaths();
+}
 ---
 
 <meta charset="UTF-8" />
@@ -117,7 +117,11 @@ let next: string = origin + "/" + region + "-" + (page + 1);
             />
             <div class="ml-2">
               <p class="text-gray-800 font-bold"> {item.title}</p>
-              <p class="text-gray-600">{item.date}</p>
+              <p class="text-gray-600">
+                {DateTime.fromSeconds(item.timestamp)
+                  .setZone("local")
+                  .toLocaleString(DateTime.DATETIME_FULL)}
+              </p>
               <p class="text-gray-800">{item.body}</p>
             </div>
           </a>
@@ -147,11 +151,13 @@ let next: string = origin + "/" + region + "-" + (page + 1);
   origin={origin}
   region={region}
 />
-<div class="p-2 mx-auto">
+<div class="pb-2 border-b border-gray-800"></div>
+<div class="p-2 flex mx-auto justify-between">
   <a
     href="https://www.flaticon.com/free-icons/world"
     target="_blank"
     title="world icons"
     class="text-gray-800">World icon created by prettycons - Flaticon</a
   >
+  <p>Organized by UTC day, shown in local time</p>
 </div>

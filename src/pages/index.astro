@@ -1,5 +1,5 @@
 ---
-import OpacityMapC from "../components/OpacityMapC.astro";
+import OpacityC from "../components/leaflet/OpacityC.astro";
 ---
 
 <!doctype html>
@@ -11,7 +11,7 @@ import OpacityMapC from "../components/OpacityMapC.astro";
     <title>lichenaut's Anbamap</title>
     <link rel="stylesheet" href="leaflet.css" />
   </head>
-  <body>
-    <OpacityMapC />
+  <body class="bg-custom-blue">
+    <OpacityC isDark={false} />
   </body>
 </html>

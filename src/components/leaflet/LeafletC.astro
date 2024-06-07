@@ -1,46 +1,64 @@
 ---
 interface Props {
   regionOpacityMap: Map<string, number>;
+  isDark: boolean;
 }
 
-let { regionOpacityMap }: Props = Astro.props;
+let { regionOpacityMap, isDark }: Props = Astro.props;
 let regionOpacityMapObject = Object.fromEntries(regionOpacityMap);
 ---
 
 <div
   id="map"
-  class="bg-custom-gray h-screen w-screen relative overflow-hidden"
+  class={`${isDark === true ? "bg-custom-gray" : "bg-custom-blue"} h-screen w-screen relative overflow-hidden`}
   data-region-opacity-map={JSON.stringify(regionOpacityMapObject)}
 >
 </div>
+<div id="mode" data-mode={JSON.stringify(isDark)}></div>
 <script>
-  let mapElement: HTMLElement | null = document.getElementById("map");
-  if (mapElement === null) {
-    throw new Error("Map element not found");
-  }
-
-  let dataMap: string | undefined = mapElement.dataset.regionOpacityMap;
-  if (dataMap === undefined) {
-    throw new Error("Region opacity map not found");
-  }
-
-  let regionOpacityMapObject = JSON.parse(dataMap);
-  let regionOpacityMap: Map<string, number> = new Map(
-    Object.entries(regionOpacityMapObject)
-  );
-
   import * as L from "leaflet";
   import * as GeoJSON from "geojson";
+
+  function getElementById(id: string): HTMLElement {
+    let element: HTMLElement | null = document.getElementById(id);
+    if (element === null) {
+      throw new Error(`${id} element not found`);
+    }
+    return element;
+  }
+
+  function getDatasetValue(element: HTMLElement, key: string): string {
+    let dataValue: string | undefined = element.dataset[key];
+    if (dataValue === undefined) {
+      throw new Error(`${key} not found`);
+    }
+    return dataValue;
+  }
+
+  function parseJsonToMap(json: string): Map<string, number> {
+    return new Map(Object.entries(JSON.parse(json)));
+  }
+
+  let mapElement = getElementById("map");
+  let dataMap = getDatasetValue(mapElement, "regionOpacityMap");
+  let regionOpacityMap = parseJsonToMap(dataMap);
+  let modeElement = getElementById("mode");
+  let dataMode = getDatasetValue(modeElement, "mode");
+  let isDark = JSON.parse(dataMode);
   document.addEventListener("DOMContentLoaded", function () {
     var map = L.map("map", {
       minZoom: 2,
-      maxZoom: 6,
+      maxZoom: 18,
       worldCopyJump: true,
       attributionControl: false,
     }).setView([0, 0], 3);
-    L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png"
-    ).addTo(map);
+    isDark
+      ? L.tileLayer(
+          "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        ).addTo(map)
+      : L.tileLayer(
+          "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+        ).addTo(map);
     fetch("regions.geojson")
       .then((response: Response) => {
         if (response.ok) {
@@ -79,7 +97,7 @@ let regionOpacityMapObject = Object.fromEntries(regionOpacityMap);
 
             if (layer instanceof L.Path) {
               layer.setStyle({
-                color: "#888888",
+                color: "#ebd8d5",
                 fillColor: "red",
                 weight: 1,
                 fillOpacity: opacity,
@@ -87,10 +105,12 @@ let regionOpacityMapObject = Object.fromEntries(regionOpacityMap);
             }
 
             layer.on("click", () => {
-              window.location.href = window.location.href.replace(
-                "dark",
-                code + "-1"
-              );
+              isDark
+                ? (window.location.href = window.location.href.replace(
+                    "dark",
+                    code + "-1"
+                  ))
+                : (window.location.href += code + "-1");
             });
           },
         }).addTo(map);

@@ -1,0 +1,42 @@
+---
+import { DateTime } from "luxon";
+import * as dbService from "../../services/db_service";
+import { getRegionCodes } from "../../services/long_service";
+import LeafletC from "./LeafletC.astro";
+import sqlite3 from "sqlite3";
+
+let now: number = DateTime.utc().toSeconds();
+let todayStart: number = now - (now % 86400);
+let rangeMax = todayStart + 86400;
+export let regionOpacityMap: Map<string, number> = new Map();
+let region_codes = getRegionCodes();
+let db: sqlite3.Database | null = null;
+try {
+  db = dbService.getDatabase();
+  let db_2: sqlite3.Database = db;
+  let promises = region_codes.map(async (code) => {
+    const count = await dbService.getRegionMediaCount(
+      db_2,
+      code,
+      todayStart,
+      rangeMax
+    );
+    regionOpacityMap.set(code, count / 100);
+  });
+  await Promise.all(promises);
+} catch (error) {
+  throw error;
+} finally {
+  if (db) {
+    dbService.closeDatabase(db);
+  }
+}
+
+interface Props {
+  isDark: boolean;
+}
+
+let { isDark } = Astro.props;
+---
+
+<LeafletC regionOpacityMap={regionOpacityMap} isDark={isDark} />

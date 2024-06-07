@@ -1,11 +1,5 @@
 import sqlite3 from "sqlite3";
 import { fetchImageUrl } from "./img_service";
-import { DateTime } from "luxon";
-
-interface UrlRegionRow {
-  url: string;
-  region_code: string;
-}
 
 interface UrlRow {
   url: string;
@@ -18,7 +12,6 @@ export interface MediaEntry {
   url: string;
   image_url: string;
   timestamp: number;
-  date: string;
   title: string;
   body: string;
   regions: string[];
@@ -51,9 +44,15 @@ export function getUrlsRegions(
   return new Promise((resolve) => {
     db.serialize(() => {
       db.each(
-        "SELECT * FROM url_regions WHERE region_code=?",
-        [region],
-        (err: Error, row: UrlRegionRow) => {
+        `SELECT r1.url, r1.region_code, r2.region_code AS other_region_code
+         FROM url_regions AS r1
+         LEFT JOIN url_regions AS r2 ON r1.url = r2.url AND r2.region_code != ?
+         WHERE r1.region_code = ?`,
+        [region, region],
+        (
+          err: Error,
+          row: { url: string; region_code: string; other_region_code: string }
+        ) => {
           if (err) {
             throw err;
           }
@@ -62,33 +61,16 @@ export function getUrlsRegions(
             url_region_map.set(row.url, []);
           }
           url_region_map.get(row.url)?.push(row.region_code);
+
+          if (row.other_region_code !== null) {
+            url_region_map.get(row.url)?.push(row.other_region_code);
+          }
         },
         (err: Error) => {
           if (err) {
             throw err;
           } else {
-            db.each(
-              "SELECT * FROM url_regions WHERE region_code!=?",
-              [region],
-              (err: Error, row: UrlRegionRow) => {
-                if (err) {
-                  throw err;
-                }
-
-                if (!url_region_map.has(row.url)) {
-                  return;
-                }
-
-                url_region_map.get(row.url)?.push(row.region_code);
-              },
-              (err: Error) => {
-                if (err) {
-                  throw err;
-                } else {
-                  resolve(url_region_map);
-                }
-              }
-            );
+            resolve(url_region_map);
           }
         }
       );
@@ -129,9 +111,6 @@ export function getMediaEntries(
               url: row.url,
               image_url: image_url,
               timestamp: row.timestamp,
-              date: DateTime.fromSeconds(row.timestamp)
-                .toUTC()
-                .toLocaleString(DateTime.DATETIME_FULL),
               title: row.title,
               body: row.body,
               regions: regions,

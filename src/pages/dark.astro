@@ -1,6 +1,5 @@
 ---
-import LeafletDarkC from "../components/LeafletDarkC.astro";
-import OpacityMapDarkC from "../components/OpacityMapDarkC.astro";
+import OpacityC from "../components/leaflet/OpacityC.astro";
 ---
 
 <!doctype html>
@@ -13,6 +12,6 @@ import OpacityMapDarkC from "../components/OpacityMapDarkC.astro";
     <link rel="stylesheet" href="leaflet.css" />
   </head>
   <body class="bg-custom-gray">
-    <OpacityMapDarkC />
+    <OpacityC isDark={true} />
   </body>
 </html>
