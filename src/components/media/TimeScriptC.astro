@@ -7,6 +7,22 @@
       return;
     }
 
+    const titleElement = document.querySelector("title");
+    if (!titleElement) {
+      return;
+    }
+
+    let title: string | null = titleElement.textContent;
+    if (!title) {
+      return;
+    }
+
+    if (title.includes("Favorites")) {
+      title = title.substring(13);
+    } else {
+      title = title.substring(6);
+    }
+
     const mediaEntries = Array.from(mediaList.children);
     mediaEntries.forEach((entry) => {
       let timeElement = Array.from(
@@ -19,9 +35,14 @@
       }
 
       let time = parseInt(timeString);
-      let localTime = DateTime.fromSeconds(time)
+      let localTime: string = DateTime.fromSeconds(time)
         .setZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
         .toLocaleString(DateTime.DATETIME_FULL);
+      if (!localTime.includes(title.trim())) {
+        entry.remove();
+        return;
+      }
+
       timeElement.textContent = localTime;
     });
   }

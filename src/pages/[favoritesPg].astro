@@ -60,7 +60,6 @@ export async function getStaticPaths() {
 <title>
   {"Favorites " + DateTime.fromSeconds(rangeMax).toFormat("LLLL d, yyyy")}
 </title>
-<FavoriteC />
 <div
   class="flex flex-col"
   style="position: fixed; top: 10px; left: 10px; size-fit"
@@ -156,7 +155,6 @@ export async function getStaticPaths() {
   <a href="https://www.flaticon.com/" title="world icons" class="text-gray-800"
     >Icons created by Pixel perfect, prettycons - Flaticon</a
   >
-  <p>Organized by UTC day, shown in local time</p>
 </div>
 <script>
   import * as longService from "../services/long_service";

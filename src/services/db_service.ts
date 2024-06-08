@@ -137,7 +137,7 @@ export function getMediaEntries(
     db.serialize(() => {
       db.each(
         "SELECT * FROM urls WHERE timestamp >= ? AND timestamp < ?",
-        [rangeMin, rangeMax],
+        [rangeMin - 43200, rangeMax + 43200],
         (err: Error, row: UrlRow) => {
           if (err) {
             reject(err);
