@@ -2,15 +2,14 @@
 import { DateTime } from "luxon";
 import * as dbService from "../services/db_service";
 import FaviconC from "../components/FaviconC.astro";
-import FavoriteC from "../components/media/FavoriteC.astro";
-import { Image } from "astro:assets";
 import * as longService from "../services/long_service";
 import { MediaEntry } from "../services/db_service";
 import PageManagerC from "../components/media/PageManagerC.astro";
 import sqlite3 from "sqlite3";
 import TimeScriptC from "../components/media/TimeScriptC.astro";
-import worldImage from "../assets/world.png";
-import worldImageInverted from "../assets/world_invert.png";
+import WorldC from "../components/media/WorldC.astro";
+import MediaC from "../components/media/MediaC.astro";
+import FooterC from "../components/media/FooterC.astro";
 
 let { favoritesPg } = Astro.params;
 if (favoritesPg === undefined) {
@@ -60,34 +59,7 @@ export async function getStaticPaths() {
 <title>
   {"Favorites " + DateTime.fromSeconds(rangeMax).toFormat("LLLL d, yyyy")}
 </title>
-<div
-  class="flex flex-col"
-  style="position: fixed; top: 10px; left: 10px; size-fit"
->
-  <a href={origin} class="mb-1">
-    <button class="inline-block" role="button" aria-label="Light Map">
-      <Image
-        src={worldImage}
-        alt="world icon"
-        width={50}
-        height={50}
-        loading="eager"
-      />
-    </button>
-  </a>
-  <div class="border-2 border-white mx-auto w-12"></div>
-  <a href={origin + "/dark"} class="mt-3">
-    <button class="inline-block" role="button" aria-label="Dark Map">
-      <Image
-        src={worldImageInverted}
-        alt="world icon"
-        width={50}
-        height={50}
-        loading="eager"
-      />
-    </button>
-  </a>
-</div>
+<WorldC origin={origin} />
 <div class="pt-4 mx-auto w-fit text-center flex space-x-2">
   <p class="text-4xl font-bold text-gray-800">
     Favorites
@@ -101,48 +73,9 @@ export async function getStaticPaths() {
   origin={origin}
   region="favorites"
 />
-<div class="pb-2 border-b border-gray-800 mx-auto w-4/5"></div>
-<ol id="mediaList">
-  {
-    mediaEntries.map(async (item) => (
-      <div class="p-2 m-2 border border-gray-600 w-3/5 mx-auto rounded-lg">
-        <li>
-          <a href={item.url} class="flex">
-            <Image
-              src={item.image_url}
-              alt="media icon"
-              width={1}
-              height={1}
-              class="size-1/6 max-w-fit max-h-fit rounded-lg"
-            />
-            <div class="ml-2">
-              <p class="text-gray-800 font-bold"> {item.title}</p>
-              <p class="text-gray-600">{item.timestamp}</p>
-              <p class="text-gray-800">{item.body}</p>
-            </div>
-          </a>
-          <div class="mt-2 mb-2 flex justify-between items-center">
-            <div class="border-b border-gray-600 w-1/2" />
-            <p class="text-gray-600 text-xs mx-2">GEOKEYS</p>
-            <div class="border-b border-gray-600 w-1/2" />
-          </div>
-          {item.regions.map((region) => (
-            <a href={origin + "/" + region + "-" + pageString}>
-              <button
-                class="inline-block p-1 mr-1 mb-2 border border-gray-600 rounded-lg"
-                role="button"
-              >
-                <p class="text-gray-800">
-                  {longService.getNameFromIso(region)}
-                </p>
-              </button>
-            </a>
-          ))}
-        </li>
-      </div>
-    ))
-  }
-</ol>
+<body>
+  <MediaC mediaEntries={mediaEntries} origin={origin} pageString={pageString} />
+</body>
 <PageManagerC
   page={page}
   previous={previous}
@@ -150,51 +83,52 @@ export async function getStaticPaths() {
   origin={origin}
   region="favorites"
 />
-<div class="pb-2 border-b border-gray-800"></div>
-<div class="p-2 flex mx-auto justify-between">
-  <a href="https://www.flaticon.com/" title="world icons" class="text-gray-800"
-    >Icons created by Pixel perfect, prettycons - Flaticon</a
-  >
-</div>
+<footer>
+  <FooterC />
+</footer>
 <script>
-  import * as longService from "../services/long_service";
-
-  function getFavorites(): string[] | null {
-    let item = localStorage.getItem("favorites");
-    if (item === null) {
-      return null;
-    }
-
-    return JSON.parse(item);
-  }
+  import { getFavorites } from "../services/favorite_service";
+  import { getIsoFromName } from "../services/long_service";
 
   document.addEventListener("DOMContentLoaded", (_event) => {
-    const mediaList = document.getElementById("mediaList");
+    const mediaList: HTMLElement | null = document.getElementById("mediaList");
     if (!mediaList) {
       return;
     }
 
-    const mediaEntries = Array.from(mediaList.children);
+    const mediaEntries: Element[] = Array.from(mediaList.children);
+    let favorites: string[] | null = getFavorites();
+    if (favorites === null) {
+      mediaEntries.forEach((entry) => {
+        entry.remove();
+      });
+      return;
+    }
+
     mediaEntries.forEach((entry) => {
-      let regions: string[] = Array.from(entry.querySelectorAll("button")).map(
-        (button) => {
-          let content: string | null = button.textContent;
-          let name = content ? longService.getIsoFromName(content.trim()) : "";
-          if (name === null) {
-            return "";
-          }
-
-          return name;
+      let regions: (string | null)[] = Array.from(
+        entry.querySelectorAll("button")
+      ).map((button) => {
+        let content: string | null = button.textContent;
+        if (content === null) {
+          return null;
         }
-      );
-      let favorites: string[] | null = getFavorites();
-      if (favorites === null) {
-        return;
-      }
 
-      let hasCommonElement: boolean = regions.some((region) =>
-        favorites.includes(region)
-      );
+        let name: string | null = getIsoFromName(content.trim());
+        if (name === null) {
+          return null;
+        }
+
+        return name;
+      });
+
+      let hasCommonElement: boolean = regions.some((region) => {
+        if (region === null) {
+          return false;
+        }
+
+        return favorites.includes(region);
+      });
       if (!hasCommonElement) {
         entry.remove();
       }

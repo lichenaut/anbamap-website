@@ -18,36 +18,17 @@ let regionOpacityMapObject = Object.fromEntries(regionOpacityMap);
 <script>
   import * as L from "leaflet";
   import * as GeoJSON from "geojson";
-
-  function getElementById(id: string): HTMLElement {
-    let element: HTMLElement | null = document.getElementById(id);
-    if (element === null) {
-      throw new Error(`${id} element not found`);
-    }
-    return element;
-  }
-
-  function getDatasetValue(element: HTMLElement, key: string): string {
-    let dataValue: string | undefined = element.dataset[key];
-    if (dataValue === undefined) {
-      throw new Error(`${key} not found`);
-    }
-    return dataValue;
-  }
-
-  function parseJsonToMap(json: string): Map<string, number> {
-    return new Map(Object.entries(JSON.parse(json)));
-  }
+  import * as datasetService from "../../services/dataset_service";
 
   let mapElement = document.getElementById("map");
   if (mapElement === null) {
-    throw new Error("map element not found");
+    throw new Error("Map element not found");
   }
 
-  let dataMap = getDatasetValue(mapElement, "regionOpacityMap");
-  let regionOpacityMap = parseJsonToMap(dataMap);
-  let modeElement = getElementById("mode");
-  let dataMode = getDatasetValue(modeElement, "mode");
+  let dataMap = datasetService.getDatasetValue(mapElement, "regionOpacityMap");
+  let regionOpacityMap = datasetService.parseJsonToMap(dataMap);
+  let modeElement = datasetService.getElementById("mode");
+  let dataMode = datasetService.getDatasetValue(modeElement, "mode");
   let isDark = JSON.parse(dataMode);
   document.addEventListener("DOMContentLoaded", function () {
     var map = L.map("map", {

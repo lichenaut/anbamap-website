@@ -1,0 +1,55 @@
+---
+import { getNameFromIso } from "../../services/long_service";
+import { Image } from "astro:assets";
+import { MediaEntry } from "../../services/db_service";
+
+interface Props {
+  mediaEntries: MediaEntry[];
+  origin: string;
+  pageString: string;
+}
+
+let { mediaEntries, origin, pageString } = Astro.props;
+---
+
+<div class="pb-2 border-b border-gray-800 mx-auto w-4/5"></div>
+<ol id="mediaList">
+  {
+    mediaEntries.map(async (item) => (
+      <div class="p-2 m-2 border border-gray-600 w-3/5 mx-auto rounded-lg">
+        <li>
+          <a href={item.url} class="flex">
+            <Image
+              src={item.image_url}
+              alt="media icon"
+              width={1}
+              height={1}
+              class="size-1/6 max-w-fit max-h-fit rounded-lg"
+            />
+            <div class="ml-2">
+              <p class="text-gray-800 font-bold"> {item.title}</p>
+              <p class="text-gray-600">{item.timestamp}</p>
+              <p class="text-gray-800">{item.body}</p>
+            </div>
+          </a>
+          <div class="mt-2 mb-2 flex justify-between items-center">
+            <div class="border-b border-gray-600 w-1/2" />
+            <p class="text-gray-600 text-xs mx-2">GEOKEYS</p>
+            <div class="border-b border-gray-600 w-1/2" />
+          </div>
+          {item.regions.map((region) => (
+            <a href={origin + "/" + region + "-" + pageString}>
+              <button
+                class="inline-block p-1 mr-1 mb-2 border border-gray-600 rounded-lg"
+                role="button"
+              >
+                <p class="text-gray-800">{getNameFromIso(region)}</p>
+              </button>
+            </a>
+          ))}
+        </li>
+      </div>
+    ))
+  }
+</ol>
+<div class="pb-2 border-b border-gray-800 mx-auto w-4/5"></div>

@@ -2,12 +2,12 @@
   import { DateTime } from "luxon";
 
   function convertTimestamps() {
-    const mediaList = document.getElementById("mediaList");
+    const mediaList: HTMLElement | null = document.getElementById("mediaList");
     if (!mediaList) {
       return;
     }
 
-    const titleElement = document.querySelector("title");
+    const titleElement: HTMLElement | null = document.querySelector("title");
     if (!titleElement) {
       return;
     }
@@ -23,18 +23,18 @@
       title = title.substring(6);
     }
 
-    const mediaEntries = Array.from(mediaList.children);
+    const mediaEntries: Element[] = Array.from(mediaList.children);
     mediaEntries.forEach((entry) => {
-      let timeElement = Array.from(
+      let timeElement: Element = Array.from(
         entry.querySelectorAll("p.text-gray-600")
       )[0];
 
-      let timeString = timeElement.textContent;
+      let timeString: string | null = timeElement.textContent;
       if (timeString === null) {
         return;
       }
 
-      let time = parseInt(timeString);
+      let time: number = parseInt(timeString);
       let localTime: string = DateTime.fromSeconds(time)
         .setZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
         .toLocaleString(DateTime.DATETIME_FULL);
