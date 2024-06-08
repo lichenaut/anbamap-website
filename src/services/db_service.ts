@@ -40,8 +40,8 @@ export function getUrlsRegions(
   db: sqlite3.Database,
   region: string
 ): Promise<Map<string, string[]>> {
-  let url_region_map: Map<string, string[]> = new Map();
-  return new Promise((resolve) => {
+  let url_region_map: Map<string, Set<string>> = new Map();
+  return new Promise((resolve, reject) => {
     db.serialize(() => {
       db.each(
         `SELECT r1.url, r1.region_code, r2.region_code AS other_region_code
@@ -54,23 +54,70 @@ export function getUrlsRegions(
           row: { url: string; region_code: string; other_region_code: string }
         ) => {
           if (err) {
-            throw err;
+            reject(err);
+            return;
           }
 
           if (url_region_map.get(row.url) === undefined) {
-            url_region_map.set(row.url, []);
+            url_region_map.set(row.url, new Set());
           }
-          url_region_map.get(row.url)?.push(row.region_code);
-
+          url_region_map.get(row.url)?.add(row.region_code);
           if (row.other_region_code !== null) {
-            url_region_map.get(row.url)?.push(row.other_region_code);
+            url_region_map.get(row.url)?.add(row.other_region_code);
           }
         },
         (err: Error) => {
           if (err) {
-            throw err;
+            reject(err);
           } else {
-            resolve(url_region_map);
+            const result = new Map<string, string[]>();
+            for (const [url, regionSet] of url_region_map) {
+              result.set(url, Array.from(regionSet));
+            }
+            resolve(result);
+          }
+        }
+      );
+    });
+  });
+}
+
+export function getUrlsAll(
+  db: sqlite3.Database
+): Promise<Map<string, string[]>> {
+  let url_all_map: Map<string, Set<string>> = new Map();
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      db.each(
+        `SELECT r1.url, r1.region_code, r2.region_code AS other_region_code
+         FROM url_regions AS r1
+         LEFT JOIN url_regions AS r2 ON r1.url = r2.url AND r2.region_code != r1.region_code`,
+        (
+          err: Error,
+          row: { url: string; region_code: string; other_region_code: string }
+        ) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+
+          if (!url_all_map.has(row.url)) {
+            url_all_map.set(row.url, new Set());
+          }
+          url_all_map.get(row.url)?.add(row.region_code);
+          if (row.other_region_code !== null) {
+            url_all_map.get(row.url)?.add(row.other_region_code);
+          }
+        },
+        (err: Error) => {
+          if (err) {
+            reject(err);
+          } else {
+            const result = new Map<string, string[]>();
+            for (const [url, regionSet] of url_all_map) {
+              result.set(url, Array.from(regionSet));
+            }
+            resolve(result);
           }
         }
       );
@@ -93,8 +140,8 @@ export function getMediaEntries(
         [rangeMin, rangeMax],
         (err: Error, row: UrlRow) => {
           if (err) {
-            console.error(err.message);
             reject(err);
+            return;
           }
 
           if (!urls_regions.has(row.url)) {
@@ -116,7 +163,6 @@ export function getMediaEntries(
               regions: regions,
             });
           });
-
           promises.push(promise);
         },
         (err: Error) => {
@@ -139,7 +185,7 @@ export function getRegionMediaCount(
   rangeMin: number,
   rangeMax: number
 ): Promise<number> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     db.serialize(() => {
       db.get(
         `SELECT COUNT(*) AS count 
@@ -149,7 +195,7 @@ export function getRegionMediaCount(
         [region, rangeMin, rangeMax],
         (err: Error, row: { count: number }) => {
           if (err) {
-            throw err;
+            reject(err);
           } else {
             resolve(row.count);
           }

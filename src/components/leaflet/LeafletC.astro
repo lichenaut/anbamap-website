@@ -39,7 +39,11 @@ let regionOpacityMapObject = Object.fromEntries(regionOpacityMap);
     return new Map(Object.entries(JSON.parse(json)));
   }
 
-  let mapElement = getElementById("map");
+  let mapElement = document.getElementById("map");
+  if (mapElement === null) {
+    throw new Error("map element not found");
+  }
+
   let dataMap = getDatasetValue(mapElement, "regionOpacityMap");
   let regionOpacityMap = parseJsonToMap(dataMap);
   let modeElement = getElementById("mode");

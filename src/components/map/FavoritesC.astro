@@ -1,6 +1,5 @@
 ---
-import star from "../../assets/star.png";
-import star_invert from "../../assets/star_invert.png";
+import starGold from "../../assets/star_gold.png";
 import { Image } from "astro:assets";
 
 interface Props {
@@ -11,24 +10,25 @@ let { isDark } = Astro.props;
 ---
 
 <div
-  class={`bg-white flex flex-col size-10 border-2 ${isDark === true ? "border-leaflet-dark-gray" : "border-leaflet-gray"} rounded-sm pt-1 pl-1 pr-1`}
-  style="position: fixed; top: 12px; right: 12px; z-index: 1000;"
+  class={`border-2 border-black border-opacity-20 size-10`}
+  style="position: fixed; top: 10px; right: 10px; border-radius: 5px; z-index: 1000;"
   title="Favorites"
 >
-  <a
-    href={isDark === true
-      ? Astro.request.url.replace("dark", "favorites")
-      : Astro.request.url + "favorites"}
-  >
-    <button class="inline-block" role="button" aria-label="Favorites">
-      <Image
-        src={star}
-        alt="favorites icon"
-        width={50}
-        height={50}
-        class="rounded-lg"
-        loading="eager"
-      />
-    </button>
-  </a>
+  <div class="bg-white size-9 pt-1 pl-1 pr-1" style="border-radius: 3px;">
+    <a
+      href={isDark === true
+        ? Astro.request.url.replace("dark", "favorites-1")
+        : Astro.request.url + "favorites-1"}
+    >
+      <button role="button" aria-label="Favorites">
+        <Image
+          src={starGold}
+          alt="favorites icon"
+          width={50}
+          height={50}
+          loading="eager"
+        />
+      </button>
+    </a>
+  </div>
 </div>

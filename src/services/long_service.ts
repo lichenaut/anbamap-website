@@ -2268,3 +2268,19 @@ export async function getRegionPgPaths(): Promise<RegionPg[]> {
     { params: { regionPg: "zw-7" } },
   ];
 }
+
+interface FavoritesPg {
+  params: { favoritesPg: string };
+}
+
+export async function getFavoritesPgPaths(): Promise<FavoritesPg[]> {
+  return [
+    { params: { favoritesPg: "favorites-1" } },
+    { params: { favoritesPg: "favorites-2" } },
+    { params: { favoritesPg: "favorites-3" } },
+    { params: { favoritesPg: "favorites-4" } },
+    { params: { favoritesPg: "favorites-5" } },
+    { params: { favoritesPg: "favorites-6" } },
+    { params: { favoritesPg: "favorites-7" } },
+  ];
+}
