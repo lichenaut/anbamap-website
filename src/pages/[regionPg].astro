@@ -108,7 +108,7 @@ export async function getStaticPaths() {
   region={region}
 />
 <div class="pb-2 border-b border-gray-800 mx-auto w-4/5"></div>
-<ol>
+<ol id="mediaList">
   {
     mediaEntries.map(async (item) => (
       <div class="p-2 m-2 border border-gray-600 w-3/5 mx-auto rounded-lg">
@@ -123,11 +123,7 @@ export async function getStaticPaths() {
             />
             <div class="ml-2">
               <p class="text-gray-800 font-bold"> {item.title}</p>
-              <p class="text-gray-600">
-                {DateTime.fromSeconds(item.timestamp)
-                  .setZone("local")
-                  .toLocaleString(DateTime.DATETIME_FULL)}
-              </p>
+              <p class="text-gray-600">{item.timestamp}</p>
               <p class="text-gray-800">{item.body}</p>
             </div>
           </a>
@@ -167,3 +163,34 @@ export async function getStaticPaths() {
   >
   <p>Organized by UTC day, shown in local time</p>
 </div>
+<script>
+  import { DateTime } from "luxon";
+
+  function convertTimestamps() {
+    const mediaList = document.getElementById("mediaList");
+    if (!mediaList) {
+      return;
+    }
+
+    const mediaEntries = Array.from(mediaList.children);
+    mediaEntries.forEach((entry) => {
+      let timeElement = Array.from(
+        entry.querySelectorAll("p.text-gray-600")
+      )[0];
+
+      let timeString = timeElement.textContent;
+      if (timeString === null) {
+        return;
+      }
+
+      let time = parseInt(timeString);
+      let localTime = DateTime.fromSeconds(time)
+        .setZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
+        .toLocaleString(DateTime.DATETIME_FULL);
+      timeElement.textContent = localTime;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", convertTimestamps);
+  window.onpopstate = convertTimestamps;
+</script>
