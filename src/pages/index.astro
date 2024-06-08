@@ -1,19 +1,17 @@
 ---
 import FaviconC from "../components/FaviconC.astro";
-import FavoritesC from "../components/map/FavoritesC.astro";
+import FavoritesC from "../components/map/FavoritesLinkC.astro";
 import OpacityC from "../components/leaflet/OpacityC.astro";
 ---
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <FaviconC />
-    <title>Anbamap</title>
-    <link rel="stylesheet" href="leaflet.css" />
-  </head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <meta name="generator" content={Astro.generator} />
+  <FaviconC />
+  <title>Anbamap</title>
+  <link rel="stylesheet" href="leaflet.css" />
   <body class="bg-custom-blue">
     <FavoritesC isDark={false} />
     <OpacityC isDark={false} />

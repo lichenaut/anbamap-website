@@ -1,0 +1,30 @@
+<script>
+  import { DateTime } from "luxon";
+
+  function convertTimestamps() {
+    const mediaList = document.getElementById("mediaList");
+    if (!mediaList) {
+      return;
+    }
+
+    const mediaEntries = Array.from(mediaList.children);
+    mediaEntries.forEach((entry) => {
+      let timeElement = Array.from(
+        entry.querySelectorAll("p.text-gray-600")
+      )[0];
+
+      let timeString = timeElement.textContent;
+      if (timeString === null) {
+        return;
+      }
+
+      let time = parseInt(timeString);
+      let localTime = DateTime.fromSeconds(time)
+        .setZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
+        .toLocaleString(DateTime.DATETIME_FULL);
+      timeElement.textContent = localTime;
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", convertTimestamps);
+</script>
