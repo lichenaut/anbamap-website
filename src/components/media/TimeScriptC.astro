@@ -1,5 +1,21 @@
+---
+interface Props {
+  regionCode: string;
+  regionName: string;
+}
+
+let { regionCode, regionName }: Props = Astro.props;
+---
+
+<div
+  id="regionInfo"
+  data-region-code={regionCode}
+  data-region-name={regionName}
+>
+</div>
 <script>
   import { DateTime } from "luxon";
+  import * as datasetService from "../../services/dataset_service";
 
   function convertTimestamps() {
     const mediaList: HTMLElement | null = document.getElementById("mediaList");
@@ -7,22 +23,12 @@
       return;
     }
 
-    const titleElement: HTMLElement | null = document.querySelector("title");
-    if (!titleElement) {
-      return;
-    }
-
-    let title: string | null = titleElement.textContent;
-    if (!title) {
-      return;
-    }
-
-    if (title.includes("Favorites")) {
-      title = title.substring(13);
-    } else {
-      title = title.substring(6);
-    }
-
+    let localNowTime = DateTime.local().setZone(
+      Intl.DateTimeFormat().resolvedOptions().timeZone
+    );
+    let localNowDate: string = localNowTime.toLocaleString(
+      DateTime.DATETIME_FULL
+    );
     const mediaEntries: Element[] = Array.from(mediaList.children);
     mediaEntries.forEach((entry) => {
       let timeElement: Element = Array.from(
@@ -38,13 +44,40 @@
       let localTime: string = DateTime.fromSeconds(time)
         .setZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
         .toLocaleString(DateTime.DATETIME_FULL);
-      if (!localTime.includes(title.trim())) {
+      if (!localTime.includes(localNowDate.substring(0, 12))) {
         entry.remove();
         return;
       }
 
       timeElement.textContent = localTime;
     });
+
+    let regionElement = datasetService.getElementById("regionInfo");
+    let regionName: string = datasetService.getDatasetValue(
+      regionElement,
+      "regionName"
+    );
+    let regionCode: string = datasetService.getDatasetValue(
+      regionElement,
+      "regionCode"
+    );
+
+    const titleElement: HTMLElement | null = document.querySelector("title");
+    if (!titleElement) {
+      return;
+    }
+
+    const headerElement: HTMLElement | null =
+      document.querySelector("p.text-4xl");
+    if (!headerElement) {
+      return;
+    }
+
+    let localNowDateMed: string = localNowTime.toLocaleString(
+      DateTime.DATE_MED
+    );
+    titleElement.textContent = regionCode + " " + localNowDateMed;
+    headerElement.textContent = regionName + " " + localNowDateMed;
   }
 
   window.addEventListener("DOMContentLoaded", convertTimestamps);

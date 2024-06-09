@@ -1,5 +1,13 @@
 ---
-const { page, previous, next, origin, region } = Astro.props;
+interface Props {
+  page: number;
+  previous: string;
+  next: string;
+  origin: string;
+  region: string;
+}
+
+const { page, previous, next, origin, region }: Props = Astro.props;
 ---
 
 <div class="p-2 mt-2 w-fit mx-auto flex rounded-lg">

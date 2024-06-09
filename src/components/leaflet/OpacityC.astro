@@ -36,7 +36,7 @@ interface Props {
   isDark: boolean;
 }
 
-let { isDark } = Astro.props;
+let { isDark }: Props = Astro.props;
 ---
 
 <LeafletC regionOpacityMap={regionOpacityMap} isDark={isDark} />

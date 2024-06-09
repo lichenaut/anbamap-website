@@ -6,7 +6,7 @@ interface Props {
   region: string;
 }
 
-let { region } = Astro.props;
+let { region }: Props = Astro.props;
 ---
 
 <div id="favoriteButton" data-region={JSON.stringify(region)}></div>

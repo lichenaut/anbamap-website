@@ -51,6 +51,11 @@ let url = new URL(Astro.request.url);
 let origin = url.origin;
 let previous: string = origin + "/" + region + "-" + (page - 1);
 let next: string = origin + "/" + region + "-" + (page + 1);
+let regionName: string | null = longService.getNameFromIso(region);
+if (regionName === null) {
+  throw new Error("Region not found");
+}
+
 mediaEntries.sort((a, b) => b.timestamp - a.timestamp);
 
 export async function getStaticPaths() {
@@ -71,7 +76,7 @@ export async function getStaticPaths() {
 <WorldC origin={origin} />
 <div class="pt-4 mx-auto w-fit text-center flex space-x-2">
   <p class="text-4xl font-bold text-gray-800">
-    {longService.getNameFromIso(region)}
+    {regionName}
     {DateTime.fromSeconds(rangeMax).toFormat("LLLL d, yyyy")}
   </p>
 </div>
@@ -95,4 +100,4 @@ export async function getStaticPaths() {
 <footer>
   <FooterC />
 </footer>
-<TimeScriptC />
+<TimeScriptC regionCode={region} regionName={regionName} />
