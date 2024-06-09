@@ -2,15 +2,17 @@
 interface Props {
   regionCode: string;
   regionName: string;
+  pageNumber: number;
 }
 
-let { regionCode, regionName }: Props = Astro.props;
+let { regionCode, regionName, pageNumber }: Props = Astro.props;
 ---
 
 <div
   id="regionInfo"
   data-region-code={regionCode}
   data-region-name={regionName}
+  data-page-number={pageNumber}
 >
 </div>
 <script>
@@ -23,12 +25,34 @@ let { regionCode, regionName }: Props = Astro.props;
       return;
     }
 
-    let localNowTime = DateTime.local().setZone(
-      Intl.DateTimeFormat().resolvedOptions().timeZone
+    let regionElement = datasetService.getElementById("regionInfo");
+    let regionName: string = datasetService.getDatasetValue(
+      regionElement,
+      "regionName"
     );
-    let localNowDate: string = localNowTime.toLocaleString(
-      DateTime.DATETIME_FULL
+    let regionCode: string = datasetService.getDatasetValue(
+      regionElement,
+      "regionCode"
     );
+    let pageNumber: number =
+      parseInt(datasetService.getDatasetValue(regionElement, "pageNumber")) - 1;
+    let localNowTime: number = Math.floor(Date.now() / 1000);
+    let pageNowTime: number = localNowTime - pageNumber * 86400;
+    let pageDate: string = DateTime.fromSeconds(pageNowTime)
+      .setZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
+      .toLocaleString(DateTime.DATETIME_FULL)
+      .substring(0, 12);
+    let titleElement: HTMLElement | null = document.querySelector("title");
+    if (!titleElement) {
+      return;
+    }
+    let headerElement: HTMLElement | null =
+      document.querySelector("p.text-4xl");
+    if (!headerElement) {
+      return;
+    }
+    titleElement.textContent = regionCode + " " + pageDate;
+    headerElement.textContent = regionName + " " + pageDate;
     const mediaEntries: Element[] = Array.from(mediaList.children);
     mediaEntries.forEach((entry) => {
       let timeElement: Element = Array.from(
@@ -44,40 +68,14 @@ let { regionCode, regionName }: Props = Astro.props;
       let localTime: string = DateTime.fromSeconds(time)
         .setZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
         .toLocaleString(DateTime.DATETIME_FULL);
-      if (!localTime.includes(localNowDate.substring(0, 12))) {
+
+      if (!localTime.includes(pageDate)) {
         entry.remove();
         return;
       }
 
       timeElement.textContent = localTime;
     });
-
-    let regionElement = datasetService.getElementById("regionInfo");
-    let regionName: string = datasetService.getDatasetValue(
-      regionElement,
-      "regionName"
-    );
-    let regionCode: string = datasetService.getDatasetValue(
-      regionElement,
-      "regionCode"
-    );
-
-    const titleElement: HTMLElement | null = document.querySelector("title");
-    if (!titleElement) {
-      return;
-    }
-
-    const headerElement: HTMLElement | null =
-      document.querySelector("p.text-4xl");
-    if (!headerElement) {
-      return;
-    }
-
-    let localNowDateMed: string = localNowTime.toLocaleString(
-      DateTime.DATE_MED
-    );
-    titleElement.textContent = regionCode + " " + localNowDateMed;
-    headerElement.textContent = regionName + " " + localNowDateMed;
   }
 
   window.addEventListener("DOMContentLoaded", convertTimestamps);
