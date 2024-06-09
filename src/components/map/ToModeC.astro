@@ -1,0 +1,62 @@
+---
+import { Image } from "astro:assets";
+import worldImage from "../../assets/world.png";
+import worldImageInverted from "../../assets/world_invert.png";
+
+interface Props {
+  isDark: boolean;
+  origin: string;
+}
+
+let { isDark, origin }: Props = Astro.props;
+---
+
+{
+  isDark ? (
+    <div
+      class="border-2 border-black border-opacity-20 size-10"
+      style="position: fixed; top: 10px; right: 10px; border-radius: 5px; z-index: 1000;"
+      title="Light Map"
+    >
+      <div
+        class="bg-white hover:bg-gray-100 size-9 p-1"
+        style="border-radius: 3px;"
+      >
+        <a href={origin}>
+          <button role="button" aria-label="Light Map">
+            <Image
+              src={worldImage}
+              alt="light map icon"
+              width={50}
+              height={50}
+              loading="eager"
+            />
+          </button>
+        </a>
+      </div>
+    </div>
+  ) : (
+    <div
+      class="border-2 border-black border-opacity-20 size-10"
+      style="position: fixed; top: 10px; right: 10px; border-radius: 5px; z-index: 1000;"
+      title="Dark Map"
+    >
+      <div
+        class="bg-black hover:bg-gray-900 size-9 p-1"
+        style="border-radius: 3px;"
+      >
+        <a href={origin}>
+          <button role="button" aria-label="Dark Map">
+            <Image
+              src={worldImageInverted}
+              alt="dark map icon"
+              width={50}
+              height={50}
+              loading="eager"
+            />
+          </button>
+        </a>
+      </div>
+    </div>
+  )
+}

@@ -14,10 +14,10 @@ const { page, previous, next, origin, region }: Props = Astro.props;
   <div class="pr-2">
     <a
       href={previous}
-      class={`${page === 1 ? "invisible pointer-events-none" : ""}`}
+      class={`${page === 1 ? "invisible pointer-events-none" : "hover:bg-gray-100 border border-gray-800 p-1 rounded-lg"}`}
     >
       <button class="inline-block p-1 rounded-lg" role="button">
-        <p class="text-gray-800 hover:underline">Next Day</p>
+        <p class="text-gray-800">Next Day</p>
       </button>
     </a>
   </div>
@@ -61,10 +61,10 @@ const { page, previous, next, origin, region }: Props = Astro.props;
   <div class="pl-2">
     <a
       href={next}
-      class={`${page === 7 ? "invisible pointer-events-none" : ""}`}
+      class={`${page === 7 ? "invisible pointer-events-none" : "hover:bg-gray-100 border border-gray-800 p-1 rounded-lg"}`}
     >
       <button class="inline-block p-1 rounded-lg" role="button">
-        <p class="text-gray-800 hover:underline">Prev Day</p>
+        <p class="text-gray-800">Prev Day</p>
       </button>
     </a>
   </div>

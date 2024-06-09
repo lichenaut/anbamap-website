@@ -2,6 +2,7 @@
 import FaviconC from "../components/FaviconC.astro";
 import FavoritesC from "../components/map/ToFavorites.astro";
 import OpacityC from "../components/leaflet/OpacityC.astro";
+import ToModeC from "../components/map/ToModeC.astro";
 ---
 
 <!doctype html>
@@ -13,6 +14,7 @@ import OpacityC from "../components/leaflet/OpacityC.astro";
   <title>Anbamap</title>
   <link rel="stylesheet" href="leaflet.css" />
   <body class="bg-custom-gray">
+    <ToModeC isDark={true} origin={Astro.request.url.replace("/dark", "")} />
     <FavoritesC isDark={true} />
     <OpacityC isDark={true} />
   </body>

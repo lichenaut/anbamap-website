@@ -20,11 +20,6 @@ let { regionCode, regionName, pageNumber }: Props = Astro.props;
   import * as datasetService from "../../services/dataset_service";
 
   function convertTimestamps() {
-    const mediaList: HTMLElement | null = document.getElementById("mediaList");
-    if (!mediaList) {
-      return;
-    }
-
     let regionElement = datasetService.getElementById("regionInfo");
     let regionName: string = datasetService.getDatasetValue(
       regionElement,
@@ -36,29 +31,35 @@ let { regionCode, regionName, pageNumber }: Props = Astro.props;
     );
     let pageNumber: number =
       parseInt(datasetService.getDatasetValue(regionElement, "pageNumber")) - 1;
-    let localNowTime: number = Math.floor(Date.now() / 1000);
-    let pageNowTime: number = localNowTime - pageNumber * 86400;
-    let pageDate: string = DateTime.fromSeconds(pageNowTime)
-      .setZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
-      .toLocaleString(DateTime.DATETIME_FULL)
-      .substring(0, 12);
     let titleElement: HTMLElement | null = document.querySelector("title");
     if (!titleElement) {
       return;
     }
+
     let headerElement: HTMLElement | null =
       document.querySelector("p.text-4xl");
     if (!headerElement) {
       return;
     }
+
+    let pageDate: string = DateTime.fromSeconds(
+      Math.floor(Date.now() / 1000) - pageNumber * 86400
+    )
+      .setZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
+      .toLocaleString(DateTime.DATETIME_FULL)
+      .substring(0, 12);
     titleElement.textContent = regionCode + " " + pageDate;
     headerElement.textContent = regionName + " " + pageDate;
-    const mediaEntries: Element[] = Array.from(mediaList.children);
+    let mediaList: HTMLElement | null = document.getElementById("mediaList");
+    if (!mediaList) {
+      return;
+    }
+
+    let mediaEntries: Element[] = Array.from(mediaList.children);
     mediaEntries.forEach((entry) => {
       let timeElement: Element = Array.from(
         entry.querySelectorAll("p.text-gray-600")
       )[0];
-
       let timeString: string | null = timeElement.textContent;
       if (timeString === null) {
         return;
@@ -68,7 +69,6 @@ let { regionCode, regionName, pageNumber }: Props = Astro.props;
       let localTime: string = DateTime.fromSeconds(time)
         .setZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
         .toLocaleString(DateTime.DATETIME_FULL);
-
       if (!localTime.includes(pageDate)) {
         entry.remove();
         return;

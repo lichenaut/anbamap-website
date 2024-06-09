@@ -11,30 +11,46 @@ let { origin }: Props = Astro.props;
 ---
 
 <div
-  class="flex flex-col"
-  style="position: fixed; top: 10px; left: 10px; size-fit"
+  class="border-2 border-black border-opacity-20 size-10"
+  style="position: fixed; top: 10px; right: 57px; border-radius: 5px;"
+  title="Light Map"
 >
-  <a href={origin} class="mb-1">
-    <button class="inline-block" role="button" aria-label="Light Map">
-      <Image
-        src={worldImage}
-        alt="world icon"
-        width={50}
-        height={50}
-        loading="eager"
-      />
-    </button>
-  </a>
-  <div class="border-2 border-white mx-auto w-12"></div>
-  <a href={origin + "/dark"} class="mt-3">
-    <button class="inline-block" role="button" aria-label="Dark Map">
-      <Image
-        src={worldImageInverted}
-        alt="world icon"
-        width={50}
-        height={50}
-        loading="eager"
-      />
-    </button>
-  </a>
+  <div
+    class="bg-white hover:bg-gray-100 size-9 p-1"
+    style="border-radius: 3px;"
+  >
+    <a href={origin}
+      ><button role="button" aria-label="Light Map">
+        <Image
+          src={worldImage}
+          alt="light map icon"
+          width={50}
+          height={50}
+          loading="eager"
+        />
+      </button>
+    </a>
+  </div>
+</div>
+<div
+  class="border-2 border-black border-opacity-20 size-10"
+  style="position: fixed; top: 10px; right: 10px; border-radius: 5px;"
+  title="Dark Map"
+>
+  <div
+    class="bg-black hover:bg-gray-900 size-9 p-1"
+    style="border-radius: 3px;"
+  >
+    <a href={origin + "/dark"}
+      ><button role="button" aria-label="Dark Map">
+        <Image
+          src={worldImageInverted}
+          alt="dark map icon"
+          width={50}
+          height={50}
+          loading="eager"
+        />
+      </button>
+    </a>
+  </div>
 </div>

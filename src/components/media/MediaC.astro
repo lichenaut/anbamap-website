@@ -16,7 +16,7 @@ let { mediaEntries, origin, pageString }: Props = Astro.props;
 <ol id="mediaList">
   {
     mediaEntries.map(async (item) => (
-      <div class="p-2 m-2 border border-gray-600 w-3/5 mx-auto rounded-lg">
+      <div class="p-2 m-2 border border-gray-600 w-4/5 mx-auto rounded-lg">
         <li>
           <a href={item.url} class="flex">
             <Image
@@ -27,23 +27,23 @@ let { mediaEntries, origin, pageString }: Props = Astro.props;
               class="size-1/6 max-w-fit max-h-fit rounded-lg"
             />
             <div class="ml-2">
-              <p class="text-gray-800 font-bold"> {item.title}</p>
-              <p class="text-gray-600">{item.timestamp}</p>
-              <p class="text-gray-800">{item.body}</p>
+              <p class="text-gray-800 text-2xl font-bold"> {item.title}</p>
+              <p class="text-gray-600 text-xl">{item.timestamp}</p>
+              <p class="text-gray-800 text-xl">{item.body}</p>
             </div>
           </a>
           <div class="mt-2 mb-2 flex justify-between items-center">
             <div class="border-b border-gray-600 w-1/2" />
-            <p class="text-gray-600 text-xs mx-2">GEOKEYS</p>
+            <p class="text-gray-600 text-s mx-2">GEOKEYS</p>
             <div class="border-b border-gray-600 w-1/2" />
           </div>
           {item.regions.map((region) => (
             <a href={origin + "/" + region + "-" + pageString}>
               <button
-                class="inline-block p-1 mr-1 mb-2 border border-gray-600 rounded-lg"
+                class="inline-block hover:bg-gray-100 p-1 mr-1 mb-2 border border-gray-600 rounded-lg"
                 role="button"
               >
-                <p class="text-gray-800">{getNameFromIso(region)}</p>
+                <p class="text-gray-800 text-xl">{getNameFromIso(region)}</p>
               </button>
             </a>
           ))}
