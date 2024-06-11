@@ -26,5 +26,14 @@ export async function fetchImageUrl(url: string) {
     let channelIcon = channelData.items[0].snippet.thumbnails.default.url;
     imageUrlCache.set(channelId, channelIcon);
     return channelIcon;
+  } else {
+    let urlOrigin = new URL(url).origin;
+    if (imageUrlCache.has(urlOrigin)) {
+      return imageUrlCache.get(urlOrigin);
+    }
+
+    let faviconUrl = `https://www.google.com/s2/favicons?domain=${url}`;
+    imageUrlCache.set(urlOrigin, faviconUrl);
+    return faviconUrl;
   }
 }
