@@ -47,7 +47,7 @@ let { regionCode, regionName, pageNumber }: Props = Astro.props;
     )
       .setZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
       .toLocaleString(DateTime.DATETIME_FULL)
-      .substring(0, 12);
+      .substring(0, 13);
     titleElement.textContent = regionCode.toUpperCase() + " " + pageDate;
     headerElement.textContent = regionName + " " + pageDate;
     let mediaList: HTMLElement | null = document.getElementById("mediaList");

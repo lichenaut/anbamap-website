@@ -47,6 +47,13 @@ let regionOpacityMapObject = Object.fromEntries(regionOpacityMap);
     fetch("regions.geojson")
       .then((response: Response) => {
         if (response.ok) {
+          L.control
+            .attribution({
+              prefix: false,
+              position: "bottomright",
+            })
+            .addTo(map)
+            .setPrefix('<a href="about">About</a> | <a href="faq">FAQ</a>');
           return response.json();
         } else {
           throw new Error("Failed to load GeoJSON file");
