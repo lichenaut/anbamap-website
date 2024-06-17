@@ -1,5 +1,6 @@
 import sqlite3 from "sqlite3";
 import { fetchImageUrl } from "./img_service";
+import { EnvService } from "./var_service";
 
 interface UrlRow {
   url: string;
@@ -19,7 +20,7 @@ export interface MediaEntry {
 
 export function getDatabase(): sqlite3.Database {
   return new sqlite3.Database(
-    "/home/lichenaut/Downloads/media_db.sqlite",
+    EnvService.getDockerVolume() + "/media_db.sqlite",
     (err) => {
       if (err) {
         throw err;
