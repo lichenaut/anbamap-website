@@ -11,6 +11,7 @@ Home page: ...
 Anbamap Website displays media scraped from [specific sources] onto a Leaflet map. Users can visit region media organized by day, favorite regions, and use Geokeys to visit other regions on the same day.
 
 About page: ...
+
 FAQ page: ...
 
 &nbsp;
@@ -25,6 +26,7 @@ Anbamap Website uses Leaflet for the interactive, colored map, Astro framework, 
 
 #### Youtube:
 
+```
 https://www.youtube.com/@amnesty/videos
 https://www.youtube.com/@antiwarnews/videos
 https://www.youtube.com/@BreakThroughNews/videos
@@ -38,14 +40,18 @@ https://www.youtube.com/@TheMarshallProject/videos
 https://www.youtube.com/@MiddleEastEye/videos
 https://www.youtube.com/@MintPressNews/videos
 https://www.youtube.com/@moreperfectunion/videos
+```
 
 #### Substack:
 
+```
 https://chrishedges.substack.com/archive
 https://mearsheimer.substack.com/archive
+```
 
 #### Misc:
 
+```
 https://accuracy.org/news-releases/
 https://www.amnestyusa.org/news/
 https://www.antiwar.com/latest.php
@@ -65,3 +71,4 @@ https://www.propublica.org/archive/
 https://truthout.org/latest/
 https://www.typeinvestigations.org/all/
 https://unicornriot.ninja/category/global/
+```
