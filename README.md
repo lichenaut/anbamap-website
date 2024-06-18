@@ -69,16 +69,6 @@ Anbamap Website uses [Leaflet](https://leafletjs.com/) for the interactive, colo
 
 &nbsp;
 
-## Deployment
-
-Create a Docker volume, pull the Docker image, and run a container.
-
-```bash
-docker volume create anbamap_vol
-docker pull lichenaut/anbamap-website:latest
-docker run -v anbamap_vol:/scraper/data -e DOCKER_VOLUME=/scraper/data image-id
-```
-
 ## Environment Variables
 
 | Environment Variable | Description                                       |

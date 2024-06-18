@@ -19,14 +19,16 @@ export interface MediaEntry {
 }
 
 export function getDatabase(): sqlite3.Database {
-  return new sqlite3.Database(
-    EnvService.getDockerVolume() + "/media_db.sqlite",
-    (err) => {
-      if (err) {
-        throw err;
-      }
+  let DOCKER_VOLUME = EnvService.getEnvVar("DOCKER_VOLUME");
+  if (DOCKER_VOLUME === undefined) {
+    throw new Error("DOCKER_VOLUME is not defined");
+  }
+
+  return new sqlite3.Database(DOCKER_VOLUME + "/media_db.sqlite", (err) => {
+    if (err) {
+      throw err;
     }
-  );
+  });
 }
 
 export function closeDatabase(db: sqlite3.Database) {

@@ -1,13 +1,17 @@
 import { EnvService } from "./var_service";
 
-let YOUTUBE_API_KEY: string;
+let YOUTUBE_API_KEY: string | undefined;
 
 let imageUrlCache: Map<string, string> = new Map();
 export async function fetchImageUrl(url: string) {
   if (url.includes("youtube.com/watch?v=")) {
     if (YOUTUBE_API_KEY === undefined) {
-      YOUTUBE_API_KEY = EnvService.getYouTubeApiKey();
+      YOUTUBE_API_KEY = EnvService.getEnvVar("YOUTUBE_API_KEY");
     }
+    if (YOUTUBE_API_KEY === undefined) {
+      return fetchFaviconUrl(url);
+    }
+
     let videoParts = url.split("watch?v=");
     let videoId = videoParts[videoParts.length - 1];
     let videoResponse = await fetch(
@@ -27,13 +31,17 @@ export async function fetchImageUrl(url: string) {
     imageUrlCache.set(channelId, channelIcon);
     return channelIcon;
   } else {
-    let urlOrigin = new URL(url).origin;
-    if (imageUrlCache.has(urlOrigin)) {
-      return imageUrlCache.get(urlOrigin);
-    }
-
-    let faviconUrl = `https://www.google.com/s2/favicons?domain=${url}`;
-    imageUrlCache.set(urlOrigin, faviconUrl);
-    return faviconUrl;
+    return fetchFaviconUrl(url);
   }
+}
+
+export async function fetchFaviconUrl(url: string) {
+  let urlOrigin = new URL(url).origin;
+  if (imageUrlCache.has(urlOrigin)) {
+    return imageUrlCache.get(urlOrigin);
+  }
+
+  let faviconUrl = `https://www.google.com/s2/favicons?domain=${url}`;
+  imageUrlCache.set(urlOrigin, faviconUrl);
+  return faviconUrl;
 }
